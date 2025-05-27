@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher-Student Communication</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #f1f1f1;
+            border-bottom: 1px solid #ddd;
+        }
+        .card-body {
+            background-color: #ffffff;
+        }
+        .card-footer {
+            background-color: #f9f9f9;
+        }
+        .message-user {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .reply-user {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .reply-section textarea {
+            border-radius: 5px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .timestamp {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        .reply {
+            margin-left: 20px;
+            padding-left: 15px;
+            border-left: 2px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <h1 class="display-6">Teacher-Student Communication</h1>
+            <p class="text-muted">Engage in meaningful discussions and get your questions answered.</p>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <textarea id="questionInput" class="form-control mb-3" rows="3" placeholder="Ask a question..."></textarea>
+                <button class="btn btn-primary w-100" onclick="postQuestion()">Post Question</button>
+            </div>
+        </div>
+        <div id="messagesContainer">
+            <div th:each="message, index : ${messages}" class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="message-user" th:text="${message.userId}"></span>
+                    <small class="timestamp" th:text="${#dates.format(message.timestamp, 'yyyy-MM-dd HH:mm')}"></small>
+                </div>
+                <div class="card-body">
+                    <p th:text="${message.message}"></p>
+                    <div class="reply-section mt-3">
+                        <textarea rows="2" class="form-control mb-2" placeholder="Write a reply..." th:id="'replyInput-' + ${index}"></textarea>
+                        <button class="btn btn-secondary btn-sm" th:onclick="'postReply(' + ${index} + ',' + ${message.postId} + ')'">Reply</button>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div th:each="reply : ${message.replies}" class="reply">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="reply-user" th:text="${reply.userId}"></span>
+                            <small class="timestamp" th:text="${#dates.format(reply.timestamp, 'yyyy-MM-dd HH:mm')}"></small>
+                        </div>
+                        <p class="mb-0" th:text="${reply.message}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/forum.js}"></script>
+</body>
+</html>

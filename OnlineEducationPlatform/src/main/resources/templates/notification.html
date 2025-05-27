@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .form-container, .table-container {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .btn-primary {
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Notification Management</h1>
+    <div class="form-container">
+        <form th:action="@{/notifications}" th:object="${notification}" method="post" class="mt-4">
+            <div class="mb-3">
+                <label for="userId" class="form-label">User ID</label>
+                <input type="text" id="userId" name="userId" class="form-control" th:field="*{userId}" required>
+            </div>
+            <div class="mb-3">
+                <label for="message" class="form-label">Message</label>
+                <textarea id="message" name="message" class="form-control" th:field="*{message}" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="type" class="form-label">Type</label>
+                <input type="text" id="type" name="type" class="form-control" th:field="*{type}" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </form>
+    </div>
+
+    <h2 class="mt-5 text-center">Notifications List</h2>
+    <div class="table-container mt-3">
+        <table class="table table-hover table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>Notification ID</th>
+                <th>User ID</th>
+                <th>Message</th>
+                <th>Type</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="notification : ${notifications}">
+                <td th:text="${notification.notificationId}"></td>
+                <td th:text="${notification.userId}"></td>
+                <td th:text="${notification.message}"></td>
+                <td th:text="${notification.type}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="notification-toast" id="notificationToast" style="display: none;">
+    <div class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage">
+                New Notification!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('mouseover', () => {
+                row.style.backgroundColor = '#f1f1f1';
+            });
+            row.addEventListener('mouseout', () => {
+                row.style.backgroundColor = '';
+            });
+        });
+
+        // WebSocket setup
+        const socket = new WebSocket('ws://localhost:8080/notifications'); // Update with your WebSocket endpoint
+
+        socket.onmessage = (event) => {
+            const notification = JSON.parse(event.data);
+            showNotification(notification.message);
+        };
+
+        function showNotification(message) {
+            const toast = document.getElementById('notificationToast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.style.display = 'block';
+
+            const bootstrapToast = new bootstrap.Toast(toast);
+            bootstrapToast.show();
+        }
+    });
+</script>
+</body>
+</html>
