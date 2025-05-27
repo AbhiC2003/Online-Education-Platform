@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduPlatform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="#">EduPlatform</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Manage Courses</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center">
+      <h2 class="mb-4">All Courses</h2>
+      <!-- Add Course Button -->
+      <a th:href="@{/addCourse}" class="btn btn-success">+ Add Course</a>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-4 mb-4" th:each="course : ${courses}">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title" th:text="${course.title}">Course Title</h5>
+            <p class="card-text">
+              <small class="text-muted" th:text="'Category: ' + ${course.category}">Category</small>
+            </p>
+          </div>
+          <div class="card-footer d-flex justify-content-between">
+            <a th:href="@{/updateCourse/{id}(id=${course.id})}" class="btn btn-primary btn-sm">Update</a>
+            <a th:href="@{/deleteCourse/{id}(id=${course.id})}" class="btn btn-danger btn-sm"
+               onclick="return confirm('Are you sure you want to delete this course?');">Delete</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
